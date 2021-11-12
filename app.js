@@ -8,6 +8,8 @@ const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/expressError');
 const { campgroundSchema, reviewSchema } = require('./schemas.js');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
@@ -31,6 +33,22 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(method_override('_method'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const sessionConfig = {
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { expires: Date.now() + 1000 * 60 * 60 * 24 * 7, maxAge: 60 * 60 * 24 * 7, httpOnly: true },
+};
+app.use(session(sessionConfig));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
