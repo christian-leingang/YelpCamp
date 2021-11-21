@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Campground = require('../models/campground');
-const cities = require('./cities');
+const cities = require('./de');
 const { places, descriptors } = require('./seedHelper');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
@@ -18,16 +18,18 @@ const sample = (array) => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
   await Campground.deleteMany({});
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 200; i++) {
+    const random600de = Math.floor(Math.random() * 600);
     const random1000 = Math.floor(Math.random() * 1000);
     const price = Math.floor(Math.random() * 20) + 10;
     const camp = new Campground({
       author: '61939188758d9c3dc9e3c6de',
-      location: `${cities[random1000].city}, ${cities[random1000].state}`,
+      location: `${cities[random600de].city}, ${cities[random600de].admin_name}`,
       title: `${sample(descriptors)} ${sample(places)}`,
       description:
         'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
       price,
+      geometry: { type: 'Point', coordinates: [cities[random600de].lng, cities[random600de].lat] },
       images: [
         {
           url: 'https://res.cloudinary.com/dwtonpdyy/image/upload/v1637402971/YelpCamp/f3dus99hqu0wvxbvgimo.jpg',
