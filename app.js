@@ -15,14 +15,16 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-
 const userRoutes = require('./routes/users');
-
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
-const { default: contentSecurityPolicy } = require('helmet/dist/middlewares/content-security-policy');
+const MongoDBStore = require('connect-mongo')(session);
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+//const dbUrl = process.env.DB_URL;
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+//Local: mongodb://localhost:27017/yelp-camp
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -53,13 +55,14 @@ const scriptSrcUrls = [
   'https://cdnjs.cloudflare.com/',
   'https://cdn.jsdelivr.net',
 ];
+//This is the array that needs added to
 const styleSrcUrls = [
   'https://kit-free.fontawesome.com/',
-  'https://stackpath.bootstrapcdn.com/',
   'https://api.mapbox.com/',
   'https://api.tiles.mapbox.com/',
   'https://fonts.googleapis.com/',
   'https://use.fontawesome.com/',
+  'https://cdn.jsdelivr.net',
 ];
 const connectSrcUrls = [
   'https://api.mapbox.com/',
@@ -68,6 +71,7 @@ const connectSrcUrls = [
   'https://events.mapbox.com/',
 ];
 const fontSrcUrls = [];
+
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -77,21 +81,28 @@ app.use(
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],
-      imgSrc: [
-        "'self'",
-        'blob:',
-        'data:',
-        'https://res.cloudinary.com/douqbebwk/', //SHOULD MATCH YOUR CLOUDINARY ACCOUNT!
-        'https://images.unsplash.com/',
-      ],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https://res.cloudinary.com/dwtonpdyy/', 'https://images.unsplash.com/'],
       fontSrc: ["'self'", ...fontSrcUrls],
     },
   })
 );
 
+const secret = process.env.SECRET || 'secret';
+
+const store = new MongoDBStore({
+  url: dbUrl,
+  secret,
+  touchAfter: 24 * 60 * 60,
+});
+
+store.on('error', function (e) {
+  console.log('SESSION ERROR', e);
+});
+
 const sessionConfig = {
+  store,
   name: 'session',
-  secret: 'secret',
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
