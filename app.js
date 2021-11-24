@@ -19,6 +19,7 @@ const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const MongoDBStore = require('connect-mongo')(session);
+const favicon = require('serve-favicon');
 
 //const dbUrl = process.env.DB_URL;
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
@@ -46,6 +47,7 @@ app.use(method_override('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(mongoSanitize());
 app.use(helmet());
+app.use(favicon(path.join(__dirname, 'public', 'img', 'tent.png')));
 
 const scriptSrcUrls = [
   'https://stackpath.bootstrapcdn.com/',
