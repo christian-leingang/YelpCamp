@@ -6,7 +6,9 @@ const map = new mapboxgl.Map({
   zoom: 4,
 });
 
-map.on('load', () => {
+map.addControl(new mapboxgl.NavigationControl());
+
+map.on('load', function () {
   // Add a new source from our GeoJSON data and
   // set the 'cluster' option to true. GL-JS will
   // add the point_count property to your source data.
