@@ -21,7 +21,10 @@
   <body class="seite d-flex flex-column vh-100">
     <div class="mb-5"><%- include('../partials/navbar')%></div>
 
-    <main class="container mt-4"><%- include('../partials/flash')%> <%- body %></main>
+    <main class="container mt-4">
+      <%- include('../partials/flash')%> <%- include('../partials/forgotPasswordModal')%> <%-
+      include('../partials/resendTokenModal')%> <%- body %>
+    </main>
 
     <footer class="footer bg-dark py-3 mt-auto">
       <div class="container">

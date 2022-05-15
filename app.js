@@ -18,9 +18,10 @@ const helmet = require('helmet');
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
-const MongoDBStore = require('connect-mongo')(session);
+const MongoDBStore = require('connect-mongo');
 const favicon = require('serve-favicon');
 const bodyparser = require('body-parser');
+const { scriptSrcUrls, styleSrcUrls, connectSrcUrls, imgSrcUrls, fontSrcUrls } = require('./utils/corsHelper');
 
 //const dbUrl = process.env.DB_URL;
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
@@ -47,49 +48,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(method_override('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(mongoSanitize());
-app.use(helmet());
+app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(favicon(path.join(__dirname, 'public', 'img', 'tent.png')));
-
-const scriptSrcUrls = [
-  'https://stackpath.bootstrapcdn.com/',
-  'https://api.tiles.mapbox.com/',
-  'https://api.mapbox.com/',
-  'https://kit.fontawesome.com/',
-  'https://cdnjs.cloudflare.com/',
-  'https://cdn.jsdelivr.net',
-  'https://code.jquery.com',
-  'https://events.mapbox.com/',
-];
-//This is the array that needs added to
-const styleSrcUrls = [
-  'https://kit-free.fontawesome.com/',
-  'https://api.mapbox.com/',
-  'https://api.tiles.mapbox.com/',
-  'https://fonts.googleapis.com/',
-  'https://use.fontawesome.com/',
-  'https://cdn.jsdelivr.net',
-];
-const connectSrcUrls = [
-  'https://api.mapbox.com/',
-  'https://a.tiles.mapbox.com/',
-  'https://b.tiles.mapbox.com/',
-  'https://events.mapbox.com/',
-];
-const fontSrcUrls = [];
 
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
-      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      connectSrc: ["'self'", ...connectSrcUrls()],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls()],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls()],
       workerSrc: ["'self'", 'blob:'],
       objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:', 'https://res.cloudinary.com/dwtonpdyy/', 'https://images.unsplash.com/'],
-      fontSrc: ["'self'", ...fontSrcUrls],
+      imgSrc: ["'self'", 'blob:', 'data:', ...imgSrcUrls()],
+      fontSrc: ["'self'", ...fontSrcUrls()],
     },
   })
 );
@@ -97,7 +71,7 @@ app.use(
 const secret = process.env.SECRET || 'secret';
 
 const store = new MongoDBStore({
-  url: dbUrl,
+  mongoUrl: dbUrl,
   secret,
   touchAfter: 24 * 60 * 60,
 });
@@ -148,6 +122,7 @@ app.get('/', (req, res) => {
 });
 
 app.all('*', (req, res, next) => {
+  console.log('404');
   next(new ExpressError('Page not found', 404));
 });
 
