@@ -41,6 +41,12 @@ For running this project locally:
 - Run seeds.js to seed the database: `node seeds.js`
 - Run app.js to start the server: `node app.js`
 - Open `localhost:3000` in your browser to see the page
+
+## Deployment
+Push to heroku:
+- `heroku login`
+- `git push heroku main`
+
 - When Heroku shows error "Application error, see logs": maybe MongoDB is inactive 
 
 ## Testing YelpCamp
