@@ -27,6 +27,8 @@ This project was part of Colt Steele's [Web Developer Bootcamp](https://www.udem
 - [Bootstrap](https://getbootstrap.com/) - The world’s most popular framework for building responsive, mobile-first sites.
 - [Passport](http://www.passportjs.org/) - Passport is authentication middleware for Node.js.
 - [Mapbox](https://www.mapbox.com/) - Precise location data and powerful developer tools to change the way we navigate the world.
+- [Cloudinary](https://cloudinary.com/) - Transform images and videos to load faster with no visual degradation
+- [SendGrid](https://sendgrid.com/) - Deliver Exceptional Email Experiences with SendGrid
 
 ## Installation
 
